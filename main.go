@@ -7,7 +7,8 @@ import (
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/process"
 	"github.com/shirou/gopsutil/host"
-
+	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/disk"
 
 )
 
@@ -16,6 +17,9 @@ func main() {
 	get_load_avg()
 	get_no_of_processes_running()
 	get_host_info()
+	get_swap_memory_stats()
+	get_virtual_memory_stats()
+	get_disk_info()
 
 }
 
@@ -101,4 +105,57 @@ func get_host_info (){
 }
 
 
+func get_swap_memory_stats(){
+	// Fetch detailed system information
+	swap_info, err := mem.SwapMemory()
+	if err != nil {
+		log.Fatal(err)
+	}
 
+
+	fmt.Printf(" ---------------------\n")
+	fmt.Printf("| SWAP MEMEMORY INFORMATION  |\n")
+	fmt.Printf(" ---------------------\n")
+	fmt.Println("Free:", (float64(swap_info.Free))/1048576, "MB or ", (float64(swap_info.Free)/1073741824), "GB")
+	fmt.Println("Percentage Used:", swap_info.UsedPercent, "%")
+	fmt.Println("Used: ",float64(swap_info.Used)/1048576)
+	fmt.Println("Total Memory Swapped: ", float64(swap_info.Total)/ 1048576 ,"MB or ", float64(swap_info.Total)/ 1073741824)
+}
+
+
+func get_virtual_memory_stats(){
+		// Fetch detailed system information
+	vm_info, err := mem.VirtualMemory()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf(" ---------------------\n")
+	fmt.Printf("| VIRTUAL  MEMEMORY INFORMATION  |\n")
+	fmt.Printf(" ---------------------\n")
+	fmt.Println("Total:", (float64(vm_info.Total))/1048576, "MB or ", (float64(vm_info.Total)/1073741824), "GB")
+	fmt.Println("Available:", (float64(vm_info.Available))/1048576, "MB or ", (float64(vm_info.Available)/1073741824), "GB")
+	fmt.Println("RAM Used:", (float64(vm_info.Used))/1048576, "MB or ", (float64(vm_info.Used)/1073741824), "GB")
+	fmt.Println("RAM Used Percentage: ", (float64(vm_info.UsedPercent)),"%")
+	fmt.Println("Free:", (float64(vm_info.Free))/1048576, "MB or ", (float64(vm_info.Free)/1073741824), "GB")
+}
+
+
+func get_disk_info(){
+
+	// Fetch disk information
+	diskInfo, err := disk.Usage("/")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
+	// Print disk information and elapsed time
+	fmt.Printf(" ---------------------\n")
+	fmt.Printf("| DISK MOUNT INFORMATION  |\n")
+	fmt.Printf(" ---------------------\n")
+	fmt.Printf("Total: %f GB\n", float64(diskInfo.Total)/1073741824)
+	fmt.Printf("Free: %f GB \n", float64(diskInfo.Free)/1073741824)
+	fmt.Printf("Used: %f GB \n", float64(diskInfo.Used)/1073741824)
+	fmt.Printf("Usage: %.2f%%\n", diskInfo.UsedPercent)
+}
