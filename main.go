@@ -10,6 +10,8 @@ import (
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/net"
+
 
 
 )
@@ -22,6 +24,7 @@ func main() {
 	get_swap_memory_stats()
 	get_virtual_memory_stats()
 	get_disk_info()
+	get_network_stats()
 	get_cpu_usage()
 
 }
@@ -159,4 +162,24 @@ func get_cpu_usage(){
 	fmt.Printf("Go System Metrics:\n")
 	fmt.Printf("CPU Usage: %.2f%%\n", cpuPercent[0])
 	fmt.Printf("Total Memory: %d MB\n", vm.Total/1024/1024)
+}
+
+func get_network_stats(){
+
+	netIOCounters, err := net.IOCounters(false)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
+	fmt.Printf(" ---------------------\n")
+	fmt.Printf("| NETWWORK STATS   |\n")
+	fmt.Printf(" ---------------------\n")
+	for _, io := range netIOCounters {
+		fmt.Printf("Name: %s\n", io.Name)
+		fmt.Printf("  Bytes Sent: %d\n", io.BytesSent)
+		fmt.Printf("  Bytes Received: %d\n", io.BytesRecv)
+		fmt.Printf("  Packets Sent: %d\n", io.PacketsSent)
+		fmt.Printf("  Packets Received: %d\n", io.PacketsRecv)
+	}
 }
