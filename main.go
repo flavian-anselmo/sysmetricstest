@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-
+	startTime := time.Now()
 	get_load_avg()
 	get_no_of_processes_running()
 	get_host_info()
@@ -25,18 +25,21 @@ func main() {
 	get_virtual_memory_stats()
 	get_disk_info()
 	get_network_stats()
-	get_cpu_usage()
-
+	// get_cpu_usage()
+	elapsedTime := time.Since(startTime)
+	fmt.Printf("Elapsed Time: %v\n", elapsedTime)
 }
 
 
 
 func get_load_avg() {
+	startTime := time.Now()
 	// Fetch system load average
 	loadAvg, err := load.Avg()
 	if err != nil {
 		log.Fatal(err)
 	}
+	elapsedTime := time.Since(startTime)
 	// Print the load average and elapsed time
 	fmt.Printf(" ---------------------\n")
 	fmt.Printf("| SYSTEM LOAD AVERAGE:|\n")
@@ -45,12 +48,14 @@ func get_load_avg() {
 	fmt.Printf("1-minute: %.2f\n", loadAvg.Load1)
 	fmt.Printf("5-minute: %.2f\n", loadAvg.Load5)
 	fmt.Printf("15-minute: %.2f\n", loadAvg.Load15)
+	fmt.Printf("Elapsed Time: %v\n", elapsedTime)
 
 }
 
 
 func get_no_of_processes_running(){
 
+	startTime := time.Now()
 
 	// Get a list of all running processes
 	processes, err := process.Processes()
@@ -58,12 +63,14 @@ func get_no_of_processes_running(){
 		log.Fatal(err)
 	}
 
+	elapsedTime := time.Since(startTime)
 
 	// Print the list of running processes and elapsed time
 	fmt.Printf(" ---------------------\n")
 	fmt.Printf("| PROCESSES RUNNING:  |\n")
 	fmt.Printf(" ---------------------\n")
 	fmt.Println("Number of processes: ", len(processes))
+	fmt.Printf("Elapsed Time: %v\n", elapsedTime)
 
 }
 
