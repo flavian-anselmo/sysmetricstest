@@ -9,6 +9,8 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/cpu"
+
 
 )
 
@@ -20,24 +22,18 @@ func main() {
 	get_swap_memory_stats()
 	get_virtual_memory_stats()
 	get_disk_info()
+	get_cpu_usage()
 
 }
 
 
 
 func get_load_avg() {
-	// Measure the time it takes to fetch system load average
-	startTime := time.Now()
-
 	// Fetch system load average
 	loadAvg, err := load.Avg()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Calculate elapsed time
-	elapsedTime := time.Since(startTime)
-
 	// Print the load average and elapsed time
 	fmt.Printf(" ---------------------\n")
 	fmt.Printf("| SYSTEM LOAD AVERAGE:|\n")
@@ -46,14 +42,12 @@ func get_load_avg() {
 	fmt.Printf("1-minute: %.2f\n", loadAvg.Load1)
 	fmt.Printf("5-minute: %.2f\n", loadAvg.Load5)
 	fmt.Printf("15-minute: %.2f\n", loadAvg.Load15)
-	fmt.Printf("Time Taken: %v\n", elapsedTime)
 
 }
 
 
 func get_no_of_processes_running(){
-	// Measure the time it takes to fetch running processes
-	startTime := time.Now()
+
 
 	// Get a list of all running processes
 	processes, err := process.Processes()
@@ -61,29 +55,19 @@ func get_no_of_processes_running(){
 		log.Fatal(err)
 	}
 
-	// Calculate elapsed time
-	elapsedTime := time.Since(startTime)
 
 	// Print the list of running processes and elapsed time
 	fmt.Printf(" ---------------------\n")
 	fmt.Printf("| PROCESSES RUNNING:  |\n")
 	fmt.Printf(" ---------------------\n")
 	fmt.Println("Number of processes: ", len(processes))
-	fmt.Printf("Elapsed Time: %v\n", elapsedTime)
 
-
-	// for _, p := range processes {
-	// 	name, _ := p.Name()
-	// 	pid := p.Pid
-	// 	fmt.Printf("Process ID: %d, Name: %s\n", pid, name)
-	// }
 }
 
 
 func get_host_info (){
 
 
-	startTime := time.Now()
 
 	// Fetch detailed system information
 	info, err := host.Info()
@@ -91,8 +75,7 @@ func get_host_info (){
 		log.Fatal(err)
 	}
 
-	// Calculate elapsed time
-	elapsedTime := time.Since(startTime)
+
 
 	fmt.Printf(" ---------------------\n")
 	fmt.Printf("| SYSTEM INFORMATION  |\n")
@@ -101,7 +84,6 @@ func get_host_info (){
 	fmt.Printf("OS: %s %s\n", info.OS, info.PlatformVersion)
 	fmt.Printf("Architecture: %s\n", info.KernelArch)
 	fmt.Println("Uptime:", (float64(info.Uptime)/3600), "hours")
-	fmt.Printf("Elapsed Time: %v\n", elapsedTime)
 }
 
 
@@ -158,4 +140,23 @@ func get_disk_info(){
 	fmt.Printf("Free: %f GB \n", float64(diskInfo.Free)/1073741824)
 	fmt.Printf("Used: %f GB \n", float64(diskInfo.Used)/1073741824)
 	fmt.Printf("Usage: %.2f%%\n", diskInfo.UsedPercent)
+}
+
+func get_cpu_usage(){
+	cpuPercent, err := cpu.Percent(5*time.Second, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	vm, err := mem.VirtualMemory()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf(" ---------------------\n")
+	fmt.Printf("| CPU USAGE            |\n")
+	fmt.Printf(" ---------------------\n")	
+	fmt.Printf("Go System Metrics:\n")
+	fmt.Printf("CPU Usage: %.2f%%\n", cpuPercent[0])
+	fmt.Printf("Total Memory: %d MB\n", vm.Total/1024/1024)
 }
